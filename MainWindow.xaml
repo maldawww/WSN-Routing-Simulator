@@ -1,0 +1,118 @@
+﻿<Window x:Class="SensorNetworkSimulator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Sensor Network Simulator" Height="600" Width="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Panel sterowania -->
+        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+            <TextBlock Text="Number of Sensors:"/>
+            <TextBox x:Name="SensorCountBox" Text="20"/>
+
+            <TextBlock Text="Number of POIs:"/>
+            <TextBox x:Name="POICountBox" Text="5" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Sensor Range:"/>
+            <TextBox x:Name="RangeBox" Text="80" Margin="0,0,0,10"/>
+
+            <Button Content="Generate" Click="Generate_Click" Margin="0,10,0,0"/>
+            <Button Content="Losuj energię" Click="RandomizeEnergy_Click" Margin="0,10,0,0"/>
+
+            <Button Content="Next Step" Click="NextStep_Click" Margin="0,10,0,0"/>
+            <Button Content="Zapisz wyniki" Click="SaveResults_Click" Margin="0,10,0,0"/>
+            <Button Content="Pokaż wykresy" Click="ShowCharts_Click" Margin="0,10,0,0"/>
+            <Button Content="Wczytaj z pliku" Click="LoadFromFile_Click" Margin="0,10,0,0"/>
+            <TextBlock Text="Szansa na zgubienie pakietu [%]:" Margin="0,10,0,0"/>
+            <Slider x:Name="PacketLossSlider" Minimum="0" Maximum="100" Value="5" TickFrequency="1" IsSnapToTickEnabled="True" Width="150"/>
+            <TextBlock Text="{Binding ElementName=PacketLossSlider, Path=Value, StringFormat=F0}" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Szansa na awarię sensora [%]:"/>
+            <Slider x:Name="FailureChanceSlider" Minimum="0" Maximum="100" Value="2" TickFrequency="1" IsSnapToTickEnabled="True" Width="150"/>
+            <TextBlock Text="{Binding ElementName=FailureChanceSlider, Path=Value, StringFormat=F0}" FontWeight="Bold" Margin="0,0,0,10"/>
+
+
+            <Button Content="Auto Symulacja" Click="AutoSimulate_Click" Margin="0,10,0,0"/>
+            <TextBlock x:Name="TotalStepCounterText"
+           Text="Tura: 0"
+           FontSize="14"
+           FontWeight="Bold"
+           Margin="0,10,0,0"/>
+            <TextBlock Text="Wybierz protokół:" Margin="0,10,0,0"/>
+            <ComboBox x:Name="RoutingSelector" SelectionChanged="RoutingSelector_SelectionChanged">
+                <ComboBoxItem Content="Najkrótsza ścieżka" IsSelected="True"/>
+                <ComboBoxItem Content="Minimum Energy"/>
+            </ComboBox>
+
+
+
+
+
+
+        </StackPanel>
+
+        <!-- Grid na Canvas + legendę -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <!-- Symulacja -->
+                <RowDefinition Height="Auto" />
+                <!-- Legenda -->
+            </Grid.RowDefinitions>
+            
+            
+
+            <!-- Canvas do rysowania -->
+            <Canvas x:Name="SimulationCanvas" Background="LightGray" Grid.Row="0"/>
+
+            <!-- Legenda -->
+            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <Ellipse Width="15" Height="15" Fill="Green" Margin="0,0,5,0"/>
+                    <TextBlock Text="Aktywny" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <Ellipse Width="15" Height="15" Fill="Black" Margin="0,0,5,0"/>
+                    <TextBlock Text="Śpiący" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <Ellipse Width="15" Height="15" Fill="Red" Margin="0,0,5,0"/>
+                    <TextBlock Text="Martwy" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <Ellipse Width="15" Height="15" Fill="Blue" Margin="0,0,5,0"/>
+                    <TextBlock Text="Centrala" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="❗" FontSize="16" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Pakiet zgubiony" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="X" FontWeight="Bold" Foreground="Red" FontSize="16" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="Sensor uległ awarii" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="10">
+                    <TextBlock Text="Awarii: " VerticalAlignment="Center"/>
+                    <TextBlock x:Name="FailuresCountText" Text="0" FontWeight="Bold" Margin="5,0"/>
+                    <TextBlock Text="| Zgubione pakiety: " VerticalAlignment="Center"/>
+                    <TextBlock x:Name="PacketLossCountText" Text="0" FontWeight="Bold" Margin="5,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                    <Button Content="Auto Symulacja" Click="AutoSimulate_Click" Margin="5,0,0,0"/>
+                    <TextBlock x:Name="AutoSimulationCounterText" Margin="10,0,0,0" VerticalAlignment="Center" FontWeight="Bold"/>
+                </StackPanel>
+
+                
+                
+            </WrapPanel>
+        </Grid>
+        
+        
+
+
+    </Grid>
+</Window>
