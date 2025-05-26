@@ -13,21 +13,43 @@ using Microsoft.Win32;
 
 namespace SensorNetworkSimulator
 {
+
+    /// <summary>
+    /// Główne okno aplikacji WPF symulującej działanie sieci sensorowej.
+    /// Obsługuje GUI, inicjalizację sieci, przebieg symulacji, wykresy oraz zapis wyników.
+    /// </summary>
+    /// 
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Zarządza całą logiką symulacji (czujniki, POI, routing, energia).
+        /// </summary>
+        /// 
         private SensorManager manager = new();
+        /// <summary>
+        /// Szerokość obszaru symulacji.
+        /// </summary>
+        /// 
         private const double FieldWidth = 600;
+
+        /// <summary>
+        /// Wysokosc obszaru symulacji.
+        /// </summary>
         private const double FieldHeight = 500;
         private int failureCount = 0;
         private int lostPacketCount = 0;
         private int totalSteps = 0;
 
-
+        /// <summary>
+        /// Inicjalizuje komponenty GUI.
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
         }
-
+        /// <summary>
+        /// Obsługuje przycisk „Generuj” — tworzy sensory, POI, centralę, ustawia zasięgi.
+        /// </summary>
         private void Generate_Click(object sender, RoutedEventArgs e)
         {
 
@@ -53,7 +75,10 @@ namespace SensorNetworkSimulator
             DrawNetwork();
         }
 
-
+        /// <summary>
+        /// Rysuje całą sieć na canvasie: sensory, POI, centralę, zasięgi, ścieżki.
+        /// Wyświetla symbole awarii i zgubionych pakietów.
+        /// </summary>
         private async void DrawNetwork()
         {
 
@@ -263,7 +288,9 @@ namespace SensorNetworkSimulator
 
 
         }
-
+        /// <summary>
+        /// Obsługuje przycisk „Następny krok” — wykonuje jeden krok symulacji.
+        /// </summary>
         private void NextStep_Click(object sender, RoutedEventArgs e)
         {
 
@@ -304,7 +331,9 @@ namespace SensorNetworkSimulator
 
 
         }
-
+        /// <summary>
+        /// Obsługuje przycisk „Zapisz wyniki” — zapisuje statystyki i stan sieci do pliku.
+        /// </summary>
         private void SaveResults_Click(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog
@@ -322,11 +351,18 @@ namespace SensorNetworkSimulator
             }
 
         }
+        /// <summary>
+        /// Otwiera okno wykresów (wykres kołowy i słupkowy).
+        /// </summary>
+    
         private void ShowCharts_Click(object sender, RoutedEventArgs e)
         {
             var window = new ChartsWindow(manager.Sensors);
             window.Show();
         }
+        /// <summary>
+        /// Wczytuje konfigurację sieci z pliku tekstowego.
+        /// </summary>
 
         private void LoadFromFile_Click(object sender, RoutedEventArgs e)
         {
@@ -338,18 +374,38 @@ namespace SensorNetworkSimulator
 
             if (dialog.ShowDialog() == true)
             {
-                ConfigLoader.LoadFromFile(dialog.FileName, out var sensors, out var pois, out var sink);
+                try
+                {
+                    ConfigLoader.LoadFromFile(dialog.FileName, out var sensors, out var pois, out var sink);
 
-                manager.Sensors = sensors;
-                manager.POIs = pois;
-                manager.SinkNode = sink;
+                    manager.Sensors = sensors;
+                    manager.POIs = pois;
+                    manager.SinkNode = sink;
 
-                manager.DetectNeighbors();
-                manager.DetectPOIs();
+                    manager.DetectNeighbors();
+                    manager.DetectPOIs();
 
-                DrawNetwork();
+                    DrawNetwork();
+                }
+                catch (FormatException fe)
+                {
+                    MessageBox.Show("Błąd formatu pliku konfiguracyjnego:\n" + fe.Message,
+                                    "Nieprawidłowy format pliku",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Wystąpił nieoczekiwany błąd podczas wczytywania pliku:\n" + ex.Message,
+                                    "Błąd",
+                                    MessageBoxButton.OK,
+                                    MessageBoxImage.Error);
+                }
             }
         }
+        /// <summary>
+        /// Uruchamia automatyczną symulację.
+        /// </summary>
 
         private async void AutoSimulate_Click(object sender, RoutedEventArgs e)
         {
@@ -387,6 +443,9 @@ namespace SensorNetworkSimulator
 
             AutoSimulationCounterText.Text = "Auto-symulacja zakończona.";
         }
+        /// <summary>
+        /// Obsługuje zmianę wybranego protokołu routingu.
+        /// </summary>
 
         private void RoutingSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -397,6 +456,10 @@ namespace SensorNetworkSimulator
             else
                 manager.CurrentProtocol = RoutingProtocol.MinimumEnergy;
         }
+
+                /// <summary>
+        /// Losuje nowe poziomy energii dla wszystkich sensorów.
+        /// </summary>
 
         private void RandomizeEnergy_Click(object sender, RoutedEventArgs e)
         {

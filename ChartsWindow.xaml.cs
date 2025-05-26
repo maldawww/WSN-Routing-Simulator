@@ -8,13 +8,39 @@ using LiveCharts.Configurations;
 
 namespace SensorNetworkSimulator
 {
+
+    /// <summary>
+    /// Okno pomocnicze wyświetlające wykresy stanu sieci sensorowej.
+    /// Zawiera wykres kołowy dla statusów oraz wykres słupkowy poziomu baterii.
+    /// </summary>
+    /// 
     public partial class ChartsWindow : Window
     {
-        public SeriesCollection SensorStateSeries { get; set; }
-        public SeriesCollection BatterySeries { get; set; }
-        public AxesCollection BatteryLabelsX { get; set; }
-        public AxesCollection BatteryAxisY { get; set; }
 
+        /// <summary>
+        /// Kolekcja danych do wykresu kołowego pokazującego stan sensorów.
+        /// </summary>
+        public SeriesCollection SensorStateSeries { get; set; }
+
+        /// <summary>
+        /// Kolekcja danych do wykresu słupkowego przedstawiającego poziom baterii.
+        /// </summary>
+        public SeriesCollection BatterySeries { get; set; }
+        /// <summary>
+        /// Oś X wykresu słupkowego (etykiety z nazwami sensorów).
+        /// </summary>
+        /// 
+        public AxesCollection BatteryLabelsX { get; set; }
+        /// <summary>
+        /// Oś Y wykresu słupkowego (wartości baterii).
+        /// </summary>
+        public AxesCollection BatteryAxisY { get; set; }
+        /// <summary>
+        /// Tworzy nowe okno wykresów na podstawie listy sensorów.
+        /// Inicjalizuje dane do wykresu kołowego i słupkowego.
+        /// </summary>
+        /// <param name="sensors">Lista sensorów do wizualizacji</param>
+        /// 
         public ChartsWindow(List<Sensor> sensors)
         {
             InitializeComponent();

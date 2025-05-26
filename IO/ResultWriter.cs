@@ -7,8 +7,19 @@ using System.Text;
 
 namespace SensorNetworkSimulator.IO
 {
+    /// <summary>
+    /// Klasa pomocnicza odpowiedzialna za zapisywanie wyników symulacji do pliku tekstowego.
+    /// Zawiera informacje o stanie czujników oraz metrykach sieci.
+    /// </summary>
     public static class ResultWriter
     {
+        /// <summary>
+        /// Zapisuje wyniki symulacji do pliku tekstowego.
+        /// Uwzględnia liczbę czujników w różnych stanach, dane szczegółowe oraz metryki sieci.
+        /// </summary>
+        /// <param name="sensors">Lista wszystkich sensorów w sieci</param>
+        /// <param name="filePath">Ścieżka do pliku wynikowego</param>
+        /// <param name="metrics">Krotka zawierająca metryki: pokrycie Q, PDR i latencję</param>
         public static void WriteResultsToFile(List<Sensor> sensors, string filePath, (double Q, double PDR, double Latency) metrics)
         {
             var sb = new StringBuilder();
@@ -41,6 +52,5 @@ namespace SensorNetworkSimulator.IO
 
             File.WriteAllText(filePath, sb.ToString());
         }
-
     }
 }

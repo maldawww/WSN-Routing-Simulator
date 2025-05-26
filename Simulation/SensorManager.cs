@@ -9,19 +9,34 @@ using SensorNetworkSimulator.Simulation;
 
 namespace SensorNetworkSimulator.Simulation
 {
-
+    /// <summary>
+    /// Główna klasa zarządzająca symulacją sieci sensorowej.
+    /// Obsługuje transmisję, awarie, detekcję POI i metryki.
+    /// </summary>
 
     public class SensorManager
     {
+        /// <summary>Łączna liczba zgubionych pakietów w symulacji.</summary>
         public int TotalPacketLosses { get; private set; } = 0;
+        /// <summary>Łączna liczba losowych awarii sensorów.</summary>
         public int TotalFailures { get; private set; } = 0;
+        /// <summary>Lista wszystkich sensorów w sieci.</summary>
         public List<Sensor> Sensors { get; set; } = new();
+        /// <summary>Lista punktów zainteresowania (POI) w sieci.</summary>
         public List<POI> POIs { get; set; } = new();
+        /// <summary>Centrala (sink) odbierająca dane z sieci.</summary>
         public CentralNode SinkNode { get; set; } = null!;
+        /// <summary>Aktualnie wybrany protokół routingu.</summary>
         public RoutingProtocol CurrentProtocol { get; set; } = RoutingProtocol.ShortestPath;
+        /// <summary>Szansa na zgubienie pakietu w % (np. 5.0).</summary>
         public double PacketLossChancePercent { get; set; } = 5.0;
+        /// <summary>Szansa na losową awarię sensora w % (np. 2.0).</summary>
         public double FailureChancePercent { get; set; } = 2.0;
 
+        /// <summary>
+        /// Oblicza metryki sieci: pokrycie Q, PDR i średnią latencję.
+        /// </summary>
+        /// <returns>Krotka (Q, PDR, Latency)</returns>
 
         public (double Q, double PDR, double AvgLatency) CalculateMetrics()
         {
@@ -65,7 +80,9 @@ namespace SensorNetworkSimulator.Simulation
 
 
         private Random rand = new();
-
+        /// <summary>
+        /// Generuje losowe pozycje sensorów na polu o zadanych wymiarach i zakresie.
+        /// </summary>
         public void GenerateSensors(int count, double fieldWidth, double fieldHeight, double range)
         {
             Sensors.Clear();
@@ -85,7 +102,9 @@ namespace SensorNetworkSimulator.Simulation
             }
         }
 
-
+        /// <summary>
+        /// Generuje losowe pozycje POI (punktów zainteresowania).
+        /// </summary>
         public void GeneratePOIs(int count, double fieldWidth, double fieldHeight)
         {
             POIs.Clear();
@@ -100,7 +119,9 @@ namespace SensorNetworkSimulator.Simulation
                 POIs.Add(poi);
             }
         }
-
+        /// <summary>
+        /// Ustawia centralę (sink) w zadanym miejscu z określonym zasięgiem.
+        /// </summary>
         public void SetCentralNode(double x, double y, double range)
         {
             SinkNode = new CentralNode
@@ -111,7 +132,9 @@ namespace SensorNetworkSimulator.Simulation
                 Range = range
             };
         }
-
+        /// <summary>
+        /// Wykrywa sąsiadów w zasięgu komunikacyjnym dla każdego sensora.
+        /// </summary>
         public void DetectNeighbors()
         {
             foreach (var sensor in Sensors)
@@ -127,6 +150,9 @@ namespace SensorNetworkSimulator.Simulation
             }
         }
 
+        /// <summary>
+        /// Sprawdza, które sensory mają w zasięgu przynajmniej jeden POI.
+        /// </summary>
         public void DetectPOIs()
         {
             foreach (var sensor in Sensors)
@@ -154,15 +180,28 @@ namespace SensorNetworkSimulator.Simulation
             }
         }
 
+        /// <summary>
+        /// Oblicza odległość między dwoma węzłami.
+        /// </summary>
         private double Distance(BaseNode a, BaseNode b)
         {
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
+        /// <summary>
+        /// Oblicza odległość między węzłem a punktem POI.
+        /// </summary>
         private double Distance(BaseNode a, POI b)
         {
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
+
+        /// <summary>
+        /// Przeprowadza transmisję danych z podanego sensora do centrali, zgodnie z wybranym protokołem.
+        /// </summary>
+        /// <param name="start">Sensor źródłowy</param>
+        /// <param name="path">Zwracana ścieżka do centrali</param>
+        /// <returns>True, jeśli transmisja zakończyła się sukcesem</returns>
 
         public bool TransmitToSink(Sensor start, out List<int> path)
         {
@@ -259,6 +298,9 @@ namespace SensorNetworkSimulator.Simulation
             return false;
         }
 
+        /// <summary>
+        /// Wariant transmisji oparty na średniej energii (Minimum Energy Routing).
+        /// </summary>
         private bool TransmitUsingMinimumEnergy(Sensor start, out List<int> path)
         {
             path = new List<int>();
@@ -361,7 +403,10 @@ namespace SensorNetworkSimulator.Simulation
 
 
 
-
+        /// <summary>
+        /// Aktualizuje poziom energii dla każdego sensora w zależności od jego statusu.
+        /// Obsługuje również losowe awarie.
+        /// </summary>
 
 
         public void UpdateEnergy()

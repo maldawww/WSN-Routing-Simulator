@@ -3,10 +3,26 @@ using System.Collections.Generic;
 
 namespace SensorNetworkSimulator.Communication
 {
+    /// <summary>
+    /// Reprezentuje pakiet danych przesyłany przez sieć sensorową.
+    /// Zawiera informacje o źródle oraz trasie przesyłu.
+    /// </summary>
     public class Packet
     {
+        /// <summary>
+        /// Identyfikator sensora, który wysłał pakiet.
+        /// </summary>
         public int SourceId { get; set; }
+
+        /// <summary>
+        /// Zbiór identyfikatorów sensorów, które już przetworzyły pakiet.
+        /// Służy do unikania zapętleń w trasie.
+        /// </summary>
         public HashSet<int> Visited { get; set; } = new();
-        public List<int> Path { get; set; } = new();  // np. [2, 7, 12, Sink]
+
+        /// <summary>
+        /// Kolejność węzłów, przez które przeszedł pakiet, zakończona centralą (-1).
+        /// /// </summary>
+        public List<int> Path { get; set; } = new();
     }
 }
